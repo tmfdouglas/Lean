@@ -98,8 +98,9 @@ namespace QuantConnect.Util
         /// </summary>
         /// <typeparam name="T">The type of the export</typeparam>
         /// <param name="typeName">The name of the type to find. This can be an assembly qualified name, a full name, or just the type's name</param>
+        /// <param name="createNewInstance">Try create a new instance instead of loading from the type cache</param>
         /// <returns>The export instance</returns>
-        public T GetExportedValueByTypeName<T>(string typeName)
+        public T GetExportedValueByTypeName<T>(string typeName, bool createNewInstance = false)
             where T : class
         {
             try
@@ -109,7 +110,7 @@ namespace QuantConnect.Util
                     T instance;
                     IEnumerable values;
                     var type = typeof(T);
-                    if (_exportedValues.TryGetValue(type, out values))
+                    if (!createNewInstance && _exportedValues.TryGetValue(type, out values))
                     {
                         // if we've alread loaded this part, then just return the same one
                         instance = values.OfType<T>().FirstOrDefault(x => x.GetType().MatchesTypeName(typeName));
