@@ -51,6 +51,10 @@ namespace QuantConnect.Tests.Engine.BrokerageTransactionHandlerTests
         {
             return Enumerable.Empty<Slice>();
         }
+
+        public void Dispose()
+        {
+        }
     }
 
     [TestFixture]

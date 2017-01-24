@@ -105,6 +105,13 @@ namespace QuantConnect.Brokerages.Tradier
             }
         }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+        }
+
         private IEnumerable<Slice> GetHistoryTick(Symbol symbol, DateTime start, DateTime end)
         {
             var history = GetTimeSeries(symbol.Value, start, end, TradierTimeSeriesIntervals.Tick);

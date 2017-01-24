@@ -220,6 +220,13 @@ namespace QuantConnect.ToolBox.IQFeed
         }
 
         /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+        }
+
+        /// <summary>
         /// Indicates the connection is live.
         /// </summary>
         private bool IsConnected

@@ -93,6 +93,13 @@ namespace QuantConnect.Lean.Engine.HistoricalData
         }
 
         /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+        }
+
+        /// <summary>
         /// Creates a subscription to process the request
         /// </summary>
         private Subscription CreateSubscription(HistoryRequest request, DateTime start, DateTime end)

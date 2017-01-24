@@ -113,6 +113,13 @@ namespace QuantConnect.Brokerages.Oanda
         }
 
         /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+        }
+
+        /// <summary>
         /// Converts a LEAN Resolution to an EGranularity
         /// </summary>
         /// <param name="resolution">The resolution to convert</param>
