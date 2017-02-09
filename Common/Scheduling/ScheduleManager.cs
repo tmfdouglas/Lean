@@ -166,8 +166,9 @@ namespace QuantConnect.Scheduling
         {
             // back the date up to ensure we get all events, the event scheduler will skip past events that whose time has passed
             var dates = dateRule.GetDates(_securities.UtcTime.Date.AddDays(-1), Time.EndOfTime);
-            var eventTimes = timeRule.CreateUtcEventTimes(dates);
+            var eventTimes = timeRule.CreateUtcEventTimes(dates) ?? Enumerable.Empty<DateTime>();
             var scheduledEvent = new ScheduledEvent(name, eventTimes, callback);
+           
             Add(scheduledEvent);
 
             var exampleTimes = eventTimes.Take(3)
@@ -176,7 +177,7 @@ namespace QuantConnect.Scheduling
 
             if (exampleTimes.Length > 0)
             {
-                Log.Trace("Event Name \"{0}\", scheduled to run at {1} (UTC){2}",
+                Log.Trace("Event Name \"{0}\", scheduled to run on {1} (UTC){2}",
                         name, string.Join(", ", exampleTimes),
                         exampleTimes.Length > 1? "..." : "");
             }
