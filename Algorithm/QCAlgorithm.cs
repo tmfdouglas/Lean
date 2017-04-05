@@ -238,7 +238,7 @@ namespace QuantConnect.Algorithm
         /// <summary>
         /// Gets the Trade Builder to generate trades from executions
         /// </summary>
-        public TradeBuilder TradeBuilder
+        public ITradeBuilder TradeBuilder
         {
             get;
             private set;
@@ -1190,6 +1190,15 @@ namespace QuantConnect.Algorithm
         }
 
         /// <summary>
+        /// Set the <see cref="ITradeBuilder"/> implementation to generate trades from executions and market price updates
+        /// </summary>
+        public void SetTradeBuilder(ITradeBuilder tradeBuilder)
+        {
+            TradeBuilder = tradeBuilder;
+            TradeBuilder.SetLiveMode(LiveMode);
+        }
+
+        /// <summary>
         /// Add specified data to our data subscriptions. QuantConnect will funnel this data to the handle data routine.
         /// </summary>
         /// <param name="securityType">MarketType Type: Equity, Commodity, Future or FOREX</param>
@@ -1641,6 +1650,42 @@ namespace QuantConnect.Algorithm
                 resolution = hasNonAddSecurityUniverses ? UniverseSettings.Resolution : Resolution.Daily;
             }
             return SecurityManager.CreateSecurity(Portfolio, SubscriptionManager, _marketHoursDatabase, _symbolPropertiesDatabase, SecurityInitializer, _benchmarkSymbol, resolution, true, 1m, false, true, false, LiveMode);
+        }
+
+        /// <summary>
+        /// Set the historical data provider
+        /// </summary>
+        /// <param name="historyProvider">Historical data provider</param>
+        public void SetHistoryProvider(IHistoryProvider historyProvider)
+        {
+            if (historyProvider == null)
+            {
+                throw new ArgumentNullException("Algorithm.SetHistoryProvider(): Historical data provider cannot be null.");
+            }
+            HistoryProvider = historyProvider;
+        }
+
+        /// <summary>
+        /// Set the runtime error
+        /// </summary>
+        /// <param name="exception">Represents error that occur during execution</param>
+        public void SetRunTimeError(Exception exception)
+        {
+            if (exception == null)
+            {
+                throw new ArgumentNullException("Algorithm.SetRunTimeError(): Algorithm.RunTimeError cannot be set to null.");
+            }
+
+            RunTimeError = exception;
+        }
+
+        /// <summary>
+        /// Set the state of a live deployment
+        /// </summary>
+        /// <param name="status">Live deployment status</param>
+        public void SetStatus(AlgorithmStatus status)
+        {
+            Status = status;
         }
     }
 }

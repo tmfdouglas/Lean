@@ -21,6 +21,7 @@ using QuantConnect.Data;
 using QuantConnect.Data.UniverseSelection;
 using QuantConnect.Data.Auxiliary;
 using QuantConnect.Interfaces;
+using QuantConnect.Util;
 
 namespace QuantConnect.Lean.Engine.DataFeeds.Enumerators.Factories
 {
@@ -30,6 +31,8 @@ namespace QuantConnect.Lean.Engine.DataFeeds.Enumerators.Factories
     /// </summary>
     public class BaseDataSubscriptionEnumeratorFactory : ISubscriptionEnumeratorFactory
     {
+        private SingleEntryDataCacheProvider _dataCacheProvider;
+
         private readonly Func<SubscriptionRequest, IEnumerable<DateTime>> _tradableDaysProvider;
         private readonly MapFileResolver _mapFileResolver;
         private readonly IFactorFileProvider _factorFileProvider;
@@ -60,11 +63,14 @@ namespace QuantConnect.Lean.Engine.DataFeeds.Enumerators.Factories
         /// Creates an enumerator to read the specified request
         /// </summary>
         /// <param name="request">The subscription request to be read</param>
-        /// <param name="dataFileProvider">Provider used to get data when it is not present on disk</param>
+        /// <param name="dataProvider">Provider used to get data when it is not present on disk</param>
         /// <returns>An enumerator reading the subscription request</returns>
-        public IEnumerator<BaseData> CreateEnumerator(SubscriptionRequest request, IDataFileProvider dataFileProvider)
+        public IEnumerator<BaseData> CreateEnumerator(SubscriptionRequest request, IDataProvider dataProvider)
         {
-            var sourceFactory = (BaseData)Activator.CreateInstance(request.Configuration.Type);
+
+            var sourceFactory = (BaseData)ObjectActivator.GetActivator(request.Configuration.Type).Invoke(new object[] { request.Configuration.Type });
+
+            _dataCacheProvider = new SingleEntryDataCacheProvider(dataProvider);
 
             foreach (var date in _tradableDaysProvider(request))
             {
@@ -72,7 +78,7 @@ namespace QuantConnect.Lean.Engine.DataFeeds.Enumerators.Factories
                 request.Configuration.MappedSymbol = GetMappedSymbol(request, date);
                 var source = sourceFactory.GetSource(request.Configuration, date, false);
                 request.Configuration.MappedSymbol = currentSymbol;
-                var factory = SubscriptionDataSourceReader.ForSource(source, dataFileProvider, request.Configuration, date, false);
+                var factory = SubscriptionDataSourceReader.ForSource(source, _dataCacheProvider, request.Configuration, date, false);
                 var entriesForDate = factory.Read(source);
                 foreach(var entry in entriesForDate)
                 {
